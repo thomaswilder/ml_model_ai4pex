@@ -1,0 +1,78 @@
+# You can use either:
+#   mode: train
+# or set train/evaluate/predict booleans directly (both supported by the code change below).
+mode: train
+
+domain: "SO_JET SO_EAST SO_TROP SO_GYRE"
+data_dir: "/gws/nopw/j04/ai4pex/twilder/NEMO_data/DINO/EXP16/features_take2/{domain}/coarsened_data/"
+model_dir: "/home/users/twilder/Python/AI4PEX/machine_learning/training/unet/"
+# model_filename: "model_20260312-170028.keras"
+# predict_save_dir: "/home/users/twilder/Python/AI4PEX/machine_learning/predictions/unet/"
+# predict_save_filename: "predictions_SO_TROP"
+
+data:
+  data_filenames: >
+    MINT_1d_0061-0072_vor_cg_{domain}_mod.nc
+    MINT_1d_0061-0072_eke_cg_{domain}.nc
+    MINT_1d_0061-0072_mke_{domain}.nc
+    MINT_1d_0061-0072_sa_cg_{domain}.nc
+    mesh_mask_exp4_{domain}_xnemo.nc
+  features: "vor coarse_ke sa"
+  target: "fine_ke"
+
+data_split: # split must sum to 1.0
+  train_ratio: 0.83
+  val_ratio: 0.085
+  test_ratio: 0.085
+  train_stride: 5
+  shuffle_seed: 41 # just use any random number to fix the shuffle order
+
+model: "unet"
+
+architecture:
+  base_filters: 64
+  depth: 2
+
+# architecture:
+#   filters: "128 64 64 64 1"
+#   kernels: "(5,5) (3,3) (3,3) (3,3) (1,1)"
+#   padding: "(2,2) (1,1) (1,1) (1,1) (0,0)"
+#   dilation_rates: "1 1 1 1 1"
+
+training:
+  batch_size: 15
+  epochs: 100
+  dropout_rate: 0.01
+  learning_rate: 0.001
+  use_learning_rate_scheduler: false
+  learning_rate_decay_steps_multiplier: 10
+  learning_rate_decay_rate: 0.05
+  use_early_stopping: true
+  early_stopping_monitor: "val_loss"
+  early_stopping_patience: 10
+  early_stopping_min_delta: 0.001
+  early_stopping_start_from_epoch: 30
+  use_attention: true
+  pickup: false
+  use_ema: true
+  ema_momentum: 0.99
+
+normalisation:
+  local_norm: true
+  global_norm: false
+  # below are taken from a single epoch run on so_jet
+  norm_stats:
+    vor:
+      mean: -0.002294
+      std: 0.1418
+    coarse_ke_log:
+      mean: -3.729
+      std: 1.733
+    sa:
+      mean: 1.9
+      std: 0.6455
+
+logging:
+  verbose: true # if set to true -> greater verbosity
+  verbose_output_filename: "./logs/verbose_output_unet.log"
+  tensboard_log_dir: "./logs/fit/"

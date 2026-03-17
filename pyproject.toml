@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml_model_ai4pex"
+version = "0.1.0"
+description = "CNN/U-Net models for the prediction of Eddy Kinetic Energy"
+readme = "README.md"
+authors = [
+    {name = "Thomas Wilder", email = "tmwilder@outlook.com"}
+]
+requires-python = ">=3.9"
+dependencies = [
+    "tensorflow",
+    "keras",
+    "xarray",
+    "xbatcher",
+    "numpy",
+    "pyyaml",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ml_model_ai4pex*"]
