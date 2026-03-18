@@ -27,6 +27,9 @@ classifiers = [
     "Programming Language :: Python"
 ]
 
+[project.urls]
+Repository = "https://github.com/tmwilder/ml_model_ai4pex"
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["ml_model_ai4pex*"]
