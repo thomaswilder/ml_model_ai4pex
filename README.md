@@ -80,6 +80,13 @@ ml_model_ai4pex/
 
 An example SLURM submission script is provided at `run/submit_model.sh`. Edit the paths and resource requirements to match your cluster configuration before submitting. Currently spec'd for JASMIN.
 
-## License
+## Data & Reproducibility
 
-To be added.
+### Data
+
+This repository has been provided as part of an AI4PEX deliverable. Any pre-trained model or training datasets will not be supplied until the work is in a preprint stage.
+
+### Apply your own data
+
+You can of course do this. Our workflow uses a combination of [xnemogcm](https://github.com/rcaneill/xnemogcm), [CDFTOOLS](https://github.com/meom-group/CDFTOOLS/tree/master), [xesmf](https://github.com/pangeo-data/xESMF), and [gcm-filters](https://github.com/ocean-eddy-cpt/gcm-filters).
+.
