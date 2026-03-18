@@ -33,6 +33,11 @@ cp run/config_model.yml my_config.yml
 python run/run_model.py --config my_config.yml
 ```
 
+You can also override options at runtime
+```bash
+python run/run_model.py --config my_config.yml --epochs=200
+```
+
 ### Configuration
 
 `run/config_model.yml` controls all aspects of the run:
@@ -48,7 +53,7 @@ python run/run_model.py --config my_config.yml
 | `batch_size` | Batch size |
 | `learning_rate` | Initial learning rate |
 
-See the full file for all available options including architecture parameters, normalization statistics, and early stopping settings.
+Do `python run_model.py -h` for more available options including architecture parameters, normalization statistics, and early stopping settings.
 
 ## Project Structure
 
@@ -73,7 +78,7 @@ ml_model_ai4pex/
 
 ## Running on a Cluster (SLURM)
 
-An example SLURM submission script is provided at `run/submit_test.sh`. Edit the paths and resource requirements to match your cluster configuration before submitting.
+An example SLURM submission script is provided at `run/submit_model.sh`. Edit the paths and resource requirements to match your cluster configuration before submitting. Currently spec'd for JASMIN.
 
 ## License
 

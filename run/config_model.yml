@@ -3,7 +3,7 @@
 # or set train/evaluate/predict booleans directly (both supported by the code change below).
 mode: train
 
-domain: "SO_JET SO_EAST SO_TROP SO_GYRE"
+domain: "SO_JET"
 data_dir: "/gws/nopw/j04/ai4pex/twilder/NEMO_data/DINO/EXP16/features_take2/{domain}/coarsened_data/"
 model_dir: "/home/users/twilder/Python/AI4PEX/machine_learning/training/unet/"
 # model_filename: "model_20260312-170028.keras"
@@ -41,7 +41,7 @@ architecture:
 
 training:
   batch_size: 15
-  epochs: 100
+  epochs: 1
   dropout_rate: 0.01
   learning_rate: 0.001
   use_learning_rate_scheduler: false
@@ -52,8 +52,7 @@ training:
   early_stopping_patience: 10
   early_stopping_min_delta: 0.001
   early_stopping_start_from_epoch: 30
-  use_attention: true
-  pickup: false
+  use_attention: false
   use_ema: true
   ema_momentum: 0.99
 
@@ -74,5 +73,5 @@ normalisation:
 
 logging:
   verbose: true # if set to true -> greater verbosity
-  verbose_output_filename: "./logs/verbose_output_unet.log"
-  tensboard_log_dir: "./logs/fit/"
+  verbose_output_filename: "./verbose_output_unet.log"
+  tensboard_log_dir: "."

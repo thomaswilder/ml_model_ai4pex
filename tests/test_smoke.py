@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Smoke tests for ml_model_ai4pex.
+Description: 
+    Basic tests for ml_model_ai4pex.
+    Using synthetic data, the CNN and UNet approaches are shown to work end-to-end.
 
-Run directly:
-    python tests/test_smoke.py
-
-Run with pytest for richer output:
+Run using pytest:
     pytest tests/ -v
+    pytest tests/ --log-cli-level=WARNING
+
 """
 
 import sys
@@ -67,7 +68,7 @@ def _cnn_args():
         train_stride=1,
         shuffle_seed=42,
         # UNet-specific (unused)
-        base_filters=None, depth=None,
+        # base_filters=None, depth=None,
     )
 
 
@@ -98,6 +99,45 @@ def test_import():
     """Package can be imported."""
     import ml_model_ai4pex  # noqa: F401
     print("  [PASS] import ml_model_ai4pex")
+
+def test_data_split():
+    """get_data_split returns stacked train/val datasets with the expected sizes."""
+    from ml_model_ai4pex.model_setup import get_data_split
+
+    args = _unet_args()
+    ds = _synthetic_dataset(n_r=2, n_t=20)
+    ds_train, ds_val = get_data_split(ds, args, _null_logger())
+
+    assert "sample" in ds_train.dims, "Expected 'sample' dim after stack"
+    assert ds_train.sizes["sample"] > 0
+    assert ds_val.sizes["sample"] > 0
+    print(
+        f"  [PASS] get_data_split  "
+        f"train samples={ds_train.sizes['sample']}  "
+        f"val samples={ds_val.sizes['sample']}"
+    )
+
+
+def test_data_shuffle():
+    """get_data_shuffle reorders samples while preserving the total count."""
+    from ml_model_ai4pex.model_setup import get_data_split, get_data_shuffle
+
+    args = _unet_args()
+    ds = _synthetic_dataset(n_r=2, n_t=20)
+    ds_train, _ = get_data_split(ds, args, _null_logger())
+    ds_shuffled = get_data_shuffle(ds_train, args, _null_logger())
+
+    assert ds_shuffled.sizes["sample"] == ds_train.sizes["sample"]
+
+    original_idx = ds_train.coords["sample"].values
+    shuffled_idx = ds_shuffled.coords["sample"].values
+    assert not np.array_equal(original_idx, shuffled_idx), \
+        "Shuffle did not reorder samples (same order before and after)"
+
+    print(
+        f"  [PASS] get_data_shuffle  "
+        f"samples={ds_shuffled.sizes['sample']} (order changed ✓)"
+    )
 
 
 def test_scenario_unet():
@@ -156,44 +196,7 @@ def test_cnn_forward_pass():
     print(f"  [PASS] CNN forward pass   input={tuple(x.shape)} → output={tuple(y.shape)}")
 
 
-def test_data_split():
-    """get_data_split returns stacked train/val datasets with the expected sizes."""
-    from ml_model_ai4pex.model_setup import get_data_split
 
-    args = _unet_args()
-    ds = _synthetic_dataset(n_r=2, n_t=20)
-    ds_train, ds_val = get_data_split(ds, args, _null_logger())
-
-    assert "sample" in ds_train.dims, "Expected 'sample' dim after stack"
-    assert ds_train.sizes["sample"] > 0
-    assert ds_val.sizes["sample"] > 0
-    print(
-        f"  [PASS] get_data_split  "
-        f"train samples={ds_train.sizes['sample']}  "
-        f"val samples={ds_val.sizes['sample']}"
-    )
-
-
-def test_data_shuffle():
-    """get_data_shuffle reorders samples while preserving the total count."""
-    from ml_model_ai4pex.model_setup import get_data_split, get_data_shuffle
-
-    args = _unet_args()
-    ds = _synthetic_dataset(n_r=2, n_t=20)
-    ds_train, _ = get_data_split(ds, args, _null_logger())
-    ds_shuffled = get_data_shuffle(ds_train, args, _null_logger())
-
-    assert ds_shuffled.sizes["sample"] == ds_train.sizes["sample"]
-
-    original_idx = ds_train.coords["sample"].values
-    shuffled_idx = ds_shuffled.coords["sample"].values
-    assert not np.array_equal(original_idx, shuffled_idx), \
-        "Shuffle did not reorder samples (same order before and after)"
-
-    print(
-        f"  [PASS] get_data_shuffle  "
-        f"samples={ds_shuffled.sizes['sample']} (order changed ✓)"
-    )
 
 
 # ── runner ───────────────────────────────────────────────────────────────────────
@@ -202,10 +205,10 @@ TESTS = [
     test_import,
     test_scenario_unet,
     test_scenario_cnn,
-    test_unet_forward_pass,
-    test_cnn_forward_pass,
     test_data_split,
     test_data_shuffle,
+    test_unet_forward_pass,
+    test_cnn_forward_pass,
 ]
 
 if __name__ == "__main__":
