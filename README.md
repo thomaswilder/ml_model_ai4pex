@@ -18,7 +18,8 @@ This installs the `ml_model_ai4pex` package and all required dependencies.
 
 - Python >= 3.9
 - TensorFlow / Keras
-- xarray
+- Tensorboard
+- xarray[io]
 - xbatcher
 - numpy
 - PyYAML
