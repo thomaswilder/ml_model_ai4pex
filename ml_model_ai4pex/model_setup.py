@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-
-'''
-    Description: 
-'''
+"""Setup functions for configuring model scenarios and loading preprocessed data."""
 
 from ml_model_ai4pex.cnn import CNN, Scenario
 from ml_model_ai4pex.unet import UNet

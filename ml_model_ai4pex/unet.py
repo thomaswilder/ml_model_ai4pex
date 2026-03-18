@@ -1,9 +1,5 @@
 #!/usr/bin/python3
-
-'''
-    Description: U-Net model for spatial prediction tasks.
-    Reuses shared CNN components.
-'''
+"""U-Net model for spatial prediction tasks with configurable depth."""
 
 import os
 

@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-
-'''
-    Description: 
-'''
+"""Model training functions with support for CNN and UNet architectures."""
 
 from dataclasses import dataclass, field
 from typing import Optional

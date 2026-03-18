@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-
-'''
-    Description: Load a trained CNN model and run predictions on test data.
-'''
+"""Prediction functions for loading trained models and generating predictions on test data."""
 
 import numpy as np
 import xarray as xr

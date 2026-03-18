@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""Convolutional Neural Network (CNN) model implementation using Keras API."""
 
 import os
 

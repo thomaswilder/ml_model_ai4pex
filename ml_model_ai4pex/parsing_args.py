@@ -1,10 +1,5 @@
 #!/usr/bin/python3
-
-'''
-
-    Description: 
-
-'''
+"""Command-line argument parsing for model training and prediction."""
 
 
 import argparse

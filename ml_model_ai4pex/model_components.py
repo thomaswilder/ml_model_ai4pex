@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""Shared model components including custom Keras layers and the Scenario dataclass."""
 
 import os
 from dataclasses import dataclass

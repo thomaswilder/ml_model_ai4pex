@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""Data preprocessing utilities for opening, slicing, and normalizing datasets."""
 
 import numpy as np
 import xarray as xr
