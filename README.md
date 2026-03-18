@@ -46,9 +46,8 @@ python run/run_model.py --config my_config.yml --epochs=200
 |-----|-------------|
 | `model` | Architecture to use: `unet` or `cnn` |
 | `mode` | `train` or `predict` |
-| `input_file` | Path to input NetCDF file |
-| `target_file` | Path to target NetCDF file |
-| `output_dir` | Directory for saving model weights and predictions |
+| `data_filenames` | NetCDF file with inputs and target |
+| `model_dir` | Directory for saving model |
 | `epochs` | Number of training epochs |
 | `batch_size` | Batch size |
 | `learning_rate` | Initial learning rate |
