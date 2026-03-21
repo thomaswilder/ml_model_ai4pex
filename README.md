@@ -88,7 +88,7 @@ An example SLURM submission script is provided at `run/submit_model.sh`. Edit th
 
 ## Running example notebook
 
-A sample testing dataset and pre-trained keras model are found in directories `examples/sample_*`.
+A sample testing dataset and simple pre-trained keras model are found in directories `examples/sample_*`.
 
 You can run this notebook yourself by installing `ml_model_ai4pex` and installing the following pip packages: `matplotlib`, `cmocean`, `skimage` and `sklearn`.
 
@@ -97,6 +97,8 @@ You can run this notebook yourself by installing `ml_model_ai4pex` and installin
 ### Data
 
 The U-Net model is trained on high-resolution data from the [DINO configuration ](https://github.com/vopikamm/DINO/tree/DINO_4.2.1). The model uses coarse-grained fields of: $\zeta/f$ (vorticity over Coriolis parameter), coarse kinetic energy, $L_d/\Delta s$ (baroclinic deformation radius over grid scale), to predict fine kinetic energy, or eddy kinetic energy.
+
+The full dataset will be uploaded to a Zenodo repository on publication.
 
 ### Apply your own data
 
