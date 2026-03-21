@@ -104,3 +104,8 @@ The full dataset will be uploaded to a Zenodo repository on publication.
 
 You can of course do this. Our workflow uses a combination of [xnemogcm](https://github.com/rcaneill/xnemogcm), [CDFTOOLS](https://github.com/meom-group/CDFTOOLS/tree/master), [xesmf](https://github.com/pangeo-data/xESMF), and [gcm-filters](https://github.com/ocean-eddy-cpt/gcm-filters).
 .
+
+## License
+
+The code in this repository is licensed under the MIT License. See the `LICENSE` file for details. The full dataset used for the project is not included and is subject to separate access and use restrictions.
+
