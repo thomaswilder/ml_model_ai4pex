@@ -59,32 +59,44 @@ Do `python run_model.py -h` for more available options including architecture pa
 
 ```
 ml_model_ai4pex/
-├── ml_model_ai4pex/          # Installable Python package
+├── ml_model_ai4pex/                    # Installable Python package
 │   ├── __init__.py
-│   ├── cnn.py                # Fully convolutional architecture
-│   ├── unet.py               # U-Net encoder-decoder architecture
-│   ├── model_components.py   # Shared Keras layers and loss functions
-│   ├── model_setup.py        # Scenario and data setup
-│   ├── preprocess_data.py    # Data loading and preprocessing
-│   ├── train_model.py        # Training loop
-│   ├── predict_model.py      # Inference pipeline
-│   └── parsing_args.py       # CLI argument parser
+│   ├── cnn.py                          # Fully convolutional architecture
+│   ├── unet.py                         # U-Net encoder-decoder architecture
+│   ├── model_components.py             # Shared Keras layers and loss functions
+│   ├── model_setup.py                  # Scenario and data setup
+│   ├── preprocess_data.py              # Data loading and preprocessing
+│   ├── train_model.py                  # Training loop
+│   ├── predict_model.py                # Inference pipeline
+│   └── parsing_args.py                 # CLI argument parser
 ├── run/
-│   ├── run_model.py          # Main entry point script
-│   ├── config_model.yml      # Example configuration file
-│   └── submit_test.sh        # Example SLURM submission script
+│   ├── run_model.py                    # Main entry point script
+│   ├── config_model.yml                # Example configuration file
+│   └── submit_test.sh                  # Example SLURM submission script
+├── examples/
+│   ├── sample_dataset_for_github/
+│   │   └── sample*                     # Sample training datasets including input and target
+│   ├── sample_model/
+│   │   └── sample*                     # Sample pre-trained keras model
+│   └── sample_offline_analysis.ipynb   # Sample notebook
 └── pyproject.toml
 ```
 
 ## Running on a Cluster (SLURM)
 
-An example SLURM submission script is provided at `run/submit_model.sh`. Edit the paths and resource requirements to match your cluster configuration before submitting. Currently spec'd for JASMIN.
+An example SLURM submission script is provided at `run/submit_model.sh`. Edit the paths and resource requirements to match your cluster configuration before submitting. Currently spec'd for [JASMIN](https://jasmin.ac.uk/).
+
+## Running example notebook
+
+A sample testing dataset and pre-trained keras model are found in directories `examples/sample_*`.
+
+You can run this notebook yourself by installing `ml_model_ai4pex` and installing the following pip packages: `matplotlib`, `cmocean`, `skimage` and `sklearn`.
 
 ## Data & Reproducibility
 
 ### Data
 
-This repository has been provided as part of an AI4PEX deliverable. Any pre-trained model or training datasets will not be supplied until the work is in a preprint stage.
+The U-Net model is trained on high-resolution data from the [DINO configuration ](https://github.com/vopikamm/DINO/tree/DINO_4.2.1). The model uses coarse-grained fields of: $\zeta/f$ (vorticity over Coriolis parameter), coarse kinetic energy, $L_d/\Delta s$ (baroclinic deformation radius over grid scale), to predict fine kinetic energy, or eddy kinetic energy.
 
 ### Apply your own data
 
