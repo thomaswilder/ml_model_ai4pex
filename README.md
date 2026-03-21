@@ -1,6 +1,6 @@
-# ml_model_ai4pex
+# A Neural Network for the prediction of Eddy Kinetic Energy in GEOMETRIC
 
-CNN and U-Net models for a Machine Learning eddy parameterisation for [NEMO](https://www.nemo-ocean.eu/) developed as part of the [AI4PEX](https://ai4pex.eu/) project. The models learn to predict eddy kinetic energy from eddy-permitting resolution variables.
+CNN and U-Net models for a Machine Learning eddy parameterisation for [NEMO](https://www.nemo-ocean.eu/) developed as part of the [AI4PEX](https://ai4pex.eu/) project. The models learn to predict eddy kinetic energy from eddy-permitting resolution variables. The NN will form an ML-GEOMETRIC to replace the eddy energy budget in [Mak et al., 2023](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2023MS003886).
 
 ## Installation
 
