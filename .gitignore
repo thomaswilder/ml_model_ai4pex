@@ -16,14 +16,12 @@ venv/
 env/
 
 # Data files (large, not for version control)
-*.nc
 *.npy
 *.npz
 *.h5
 *.hdf5
 
 # Saved model weights
-*.keras
 *.pb
 saved_model/
 
