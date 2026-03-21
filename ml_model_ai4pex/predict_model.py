@@ -29,6 +29,11 @@ def predict_model(scenario, ds_test, args, logger=None):
         Dataset containing predicted and true target values.
     """
 
+    if logger and args.verbose:
+        logger.info(
+            f"Starting prediction with scenario: {scenario}"
+        )
+
     model_path = args.model_dir + args.model_filename
     if logger and args.verbose:
         logger.info(f"Loading model from {model_path}")

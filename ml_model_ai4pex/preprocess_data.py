@@ -48,7 +48,8 @@ def open_and_process_data(scenario,
     '''
     ds = {}
 
-    sc = copy.deepcopy(scenario) # make a copy
+    sc = copy.deepcopy(scenario) # make a copy of the original (untransformed) scenario
+    sc_transformed = None       # will hold the transformed scenario after processing
     print(sc)
 
     for region in domain:
@@ -63,9 +64,9 @@ def open_and_process_data(scenario,
                                     norm_stats=norm_stats
                                     )
         ds[region] = processor()
-        # print(ds[region])
+        sc_transformed = copy.deepcopy(processor.sc)  # capture transformed scenario (e.g. coarse_ke_log, fine_ke_log)
 
-        scenario = copy.deepcopy(sc)
+        scenario = copy.deepcopy(sc)  # reset for next region
         print(scenario)
 
     dom_slice_dict = {
@@ -97,7 +98,7 @@ def open_and_process_data(scenario,
 
     ds_combined = xr.concat(dataset_list, dim='r')
 
-    return ds_combined, scenario
+    return ds_combined, sc_transformed
 
 
 def open_and_combine_data(scenario, directory, filenames, mask_fn, domain):

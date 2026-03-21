@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
         # train the model
         model = train_model(
-            scenario, 
+            sc, 
             ds_train_shuffled, 
             ds_val, 
             training_config, 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
         ds_val, ds_test = get_data_split(ds, args, logger)
 
         # run predictions
-        pred_ds = predict_model(scenario, ds_test, args, logger=logger)
+        pred_ds = predict_model(sc, ds_test, args, logger=logger)
 
     logger.info("Model routine completed.")
 
