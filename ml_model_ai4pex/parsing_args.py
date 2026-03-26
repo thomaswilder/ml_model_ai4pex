@@ -46,6 +46,26 @@ def parse_args(argv=None):
     parser.add_argument("--train_stride", type=int, default=None, help="Stride to use when sampling the training data.")
     parser.add_argument("--shuffle_seed", type=int, default=None, help="Random seed for shuffling the data. Omit for no shuffling.")
 
+    # Seasonal omission for training only (validation stays untouched)
+    parser.add_argument(
+        "--train_omit_seasons",
+        type=split1,
+        default=None,
+        help="Space-separated seasons to omit from the training split only (e.g. 'winter' or 'summer winter').",
+    )
+    parser.add_argument(
+        "--train_omit_months",
+        type=list1,
+        default=None,
+        help="Space-separated month numbers (1-12) to omit from the training split only.",
+    )
+    parser.add_argument(
+        "--season_hemisphere",
+        type=str,
+        default="southern",
+        help="Hemisphere used when converting seasons to months. Use 'southern' (default) or 'northern'.",
+    )
+
     # choice of model architecture
     parser.add_argument("--model", type=str, default=None, help="Model architecture to use (e.g. 'unet' or 'cnn').")
 
