@@ -120,6 +120,8 @@ def parse_args(argv=None):
             cfg_nested["train"] = True
         elif mode == "predict":
             cfg_nested["predict"] = True
+        elif mode == "preprocess":
+            cfg_nested["preprocess"] = True
         else:
             raise ValueError(f"No other modes supported yet: {mode}")
         

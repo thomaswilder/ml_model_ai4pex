@@ -39,7 +39,9 @@ if __name__ == "__main__":
                 filemode='w'
     )
 
-    logger.info("Starting CNN routine ...")
+    logger.info("Starting the routine ...")
+    if args.preprocess:
+        logger.warning("Preprocessing mode selected. No training will be performed.")
 
     # GPU Configuration
     gpus = tf.config.list_physical_devices('GPU')
@@ -62,6 +64,9 @@ if __name__ == "__main__":
     # get the data for the scenario
     #! only using local normalisation for now
     ds, sc = get_data(scenario, args, logger)
+
+    if args.preprocess:
+        logger.info("Preprocessing finished. See mean and std in logged dataset.")
 
     if args.train:
 
