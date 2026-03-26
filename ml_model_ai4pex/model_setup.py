@@ -47,6 +47,10 @@ def _get_split_indices_from_nt(nt: int, args, t_months=None):
                 f"Expected t month array length {nt}, got {month_arr.shape[0]}"
             )
         keep_mask = ~np.isin(month_arr[train_idx_full], omit_months)
+        if args.verbose and args.logger:
+            args.logger.info(f"keep_mask: {keep_mask}")
+            args.logger.info(f"train_idx_full: {train_idx_full}")
+            args.logger.info(f"omit_months: {omit_months}")
         train_idx_full = train_idx_full[keep_mask]
         if train_idx_full.size == 0:
             raise ValueError(
@@ -139,11 +143,10 @@ def _compute_norm_time_indices(args, logger=None):
         if "t" not in ds_meta.sizes:
             raise KeyError("Expected dimension 't' in dataset.")
         nt = int(ds_meta.sizes["t"])
-        if _get_omit_months_from_args(args):
-            # Materialize before closing the dataset.
+        if args.train_omit_months or args.train_omit_seasons:
             t_months = np.asarray(_get_t_months(ds_meta))
         else:
-            t_months = None
+            t_months = None #* we don't need month values for normalization
     finally:
         ds_meta.close()
 
@@ -204,6 +207,7 @@ def get_data(scenario, args, logger):
                 "computed using the same training subset with the omitted season(s) removed."
             )
         if args.norm_stats is None:
+            #TODO if norm_stats is provided then we don't mask for seasons?
             norm_time_indices = _compute_norm_time_indices(args, logger=logger)
 
         ds, sc = preprocess_data.open_and_process_data(
