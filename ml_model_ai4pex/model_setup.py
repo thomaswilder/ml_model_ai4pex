@@ -5,6 +5,70 @@ from ml_model_ai4pex.cnn import CNN, Scenario
 from ml_model_ai4pex.unet import UNet
 from ml_model_ai4pex import preprocess_data
 import numpy as np
+import xarray as xr
+
+
+def _get_split_indices_from_nt(nt: int, args):
+    """
+    Compute train/val/test indices along the `t` dimension.
+
+    Note: this mirrors the logic in `get_data_split`, including `train_stride`.
+    """
+    # Match existing default behavior in get_data_split
+    n_train = args.train_ratio if args.train_ratio is not None else 0.7
+    n_val = args.val_ratio if args.val_ratio is not None else 0.15
+    n_test = args.test_ratio if args.test_ratio is not None else 0.15
+    train_stride = args.train_stride if args.train_stride is not None else 1
+
+    total_ratio = n_train + n_val + n_test
+    if not abs(total_ratio - 1.0) < 1e-6:
+        raise ValueError(
+            f"Train, val, and test ratios must sum to 1.0, got {total_ratio}"
+        )
+
+    n_train_t = int(nt * n_train)
+    n_val_t = int(nt * n_val)
+    n_test_t = int(nt * n_test)
+
+    test_idx = np.arange(nt - n_test_t, nt)
+    val_idx = np.arange(nt - n_test_t - n_val_t, nt - n_test_t)
+    train_idx_full = np.arange(0, nt - n_test_t - n_val_t)
+    train_idx = train_idx_full[::train_stride]
+
+    return train_idx, val_idx, test_idx
+
+
+def _compute_norm_time_indices(args, logger=None):
+    """
+    Determine which `t` indices should be used to compute mean/std.
+
+    For leakage prevention we compute normalization statistics on the same
+    training time subset that will be used for model training.
+    """
+    if not args.domain:
+        raise ValueError("args.domain must be provided as a list.")
+    if not args.data_filenames:
+        raise ValueError("args.data_filenames must be provided as a list.")
+
+    region0 = args.domain[0]
+    directory_region = args.data_dir.format(domain=region0)
+    fn0 = args.data_filenames[0].format(domain=region0)
+    sample_path = directory_region + fn0
+
+    if logger and args.verbose:
+        logger.info(f"Computing normalization indices from: {sample_path}")
+
+    # We only need the `t` length; avoid expensive time decoding.
+    ds_meta = xr.open_dataset(sample_path, decode_times=False)
+    try:
+        if "t" not in ds_meta.sizes:
+            raise KeyError("Expected dimension 't' in dataset.")
+        nt = int(ds_meta.sizes["t"])
+    finally:
+        ds_meta.close()
+
+    train_idx, _, _ = _get_split_indices_from_nt(nt, args)
+    return train_idx
 
 def setup_scenario(args, logger=None):
 
@@ -46,13 +110,20 @@ def get_data(scenario, args, logger):
         )
 
     if args.local_norm:
+        norm_time_indices = None
+        # If we don't supply explicit norm_stats, compute mean/std using only
+        # training time indices to avoid leakage from val/test periods.
+        if args.norm_stats is None:
+            norm_time_indices = _compute_norm_time_indices(args, logger=logger)
+
         ds, sc = preprocess_data.open_and_process_data(
-                                scenario, 
-                                args.data_dir, 
-                                args.data_filenames, 
-                                args.domain,
-                                args.norm_stats,
-                                )
+            scenario,
+            args.data_dir,
+            args.data_filenames,
+            args.domain,
+            norm_stats=args.norm_stats,
+            norm_time_indices=norm_time_indices,
+        )
     elif args.global_norm:
         raise NotImplementedError("Global normalization not implemented yet.")
     elif args.local_norm==None or args.global_norm==None:
@@ -87,19 +158,8 @@ def get_data_split(ds, args, logger):
     if not abs(total_ratio - 1.0) < 1e-6:
         raise ValueError(f"Train, val, and test ratios must sum to 1.0, got {total_ratio}")
 
-    # Get total number of time steps in the dataset
     nt = ds.sizes["t"]
-
-    n_train = int(nt * n_train)
-    n_val = int(nt * n_val)
-    n_test = int(nt * n_test)
-
-    # get indices for each split
-    test_idx = np.arange(nt - n_test, nt)
-    val_idx  = np.arange(nt - n_test - n_val, nt - n_test)
-    train_idx_full = np.arange(0, nt - n_test - n_val)
-
-    train_idx = train_idx_full[::train_stride]
+    train_idx, val_idx, test_idx = _get_split_indices_from_nt(int(nt), args)
 
     # get the data splits and return
     if args.train:

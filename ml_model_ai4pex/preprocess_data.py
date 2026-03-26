@@ -38,7 +38,8 @@ def open_and_process_data(scenario,
                           directory, 
                           filenames, 
                           domain, 
-                          norm_stats=None):
+                          norm_stats=None,
+                          norm_time_indices=None):
     '''
         Opens and preprocesses the data by feeding in directory and filenames
             into the preprocessing step.
@@ -61,7 +62,8 @@ def open_and_process_data(scenario,
                                     directory=directory_region, 
                                     filenames=fnames_region,
                                     parallel=False,
-                                    norm_stats=norm_stats
+                                    norm_stats=norm_stats,
+                                    norm_time_indices=norm_time_indices,
                                     )
         ds[region] = processor()
         sc_transformed = copy.deepcopy(processor.sc)  # capture transformed scenario (e.g. coarse_ke_log, fine_ke_log)
@@ -177,7 +179,8 @@ class data_preparation:
     def __init__(self, sc, dataset=None, mask=None,
                  directory=None, filenames=None, 
                  chunks=None, parallel=False,
-                 norm_stats=None,):
+                 norm_stats=None,
+                 norm_time_indices=None,):
         '''
             If parallel is True, then set the chunks.
         '''
@@ -186,6 +189,7 @@ class data_preparation:
         self.chunks = chunks
         self.parallel = parallel
         self.norm_stats = norm_stats
+        self.norm_time_indices = norm_time_indices
 
         # --- Handle input mode ---
         if dataset is not None:
@@ -289,20 +293,28 @@ class data_preparation:
                 mean = self.norm_stats[variable]['mean']
                 std = self.norm_stats[variable]['std']
             else:
-                mean = (
-                    (self.ds[variable]*cell_area).sum(('t', 'y_c', 'x_c')) /
-                    ((cell_area).sum(('y_c', 'x_c'))*len(self.ds['t']))
-                    .mean(('r'))
-                    )
-                std = np.sqrt(
-                    (cell_area * ( self.ds[variable] -  mean)**2 )
-                        .sum(('r', 't', 'x_c', 'y_c'))
-                        / ( cell_area.sum(('r', 'y_c', 'x_c'))*len(self.ds['t']) )
-                        )
+                var_for_stats = self.ds[variable]
+                if self.norm_time_indices is not None:
+                    var_for_stats = var_for_stats.isel(t=self.norm_time_indices)
 
-                # store mean and std
-                self.ds[f'{variable}_norm_mean'] = mean
-                self.ds[f'{variable}_norm_std'] = std
+                # Denominator must match the subset used to compute mean/std.
+                t_len = int(var_for_stats.sizes["t"])
+
+                mean = (
+                    (var_for_stats * cell_area)
+                    .sum(("t", "y_c", "x_c"))
+                    / ((cell_area).sum(("y_c", "x_c")) * t_len)
+                ).mean(("r"))
+
+                std = np.sqrt(
+                    (cell_area * (var_for_stats - mean) ** 2)
+                    .sum(("r", "t", "x_c", "y_c"))
+                    / (cell_area.sum(("r", "y_c", "x_c")) * t_len)
+                )
+
+                # store mean and std for introspection/debugging
+                self.ds[f"{variable}_norm_mean"] = mean
+                self.ds[f"{variable}_norm_std"] = std
 
             self.ds[variable] = (( self.ds[variable] - mean ) / std).compute()
             self.ds[variable] = self.ds[variable].fillna(0)
