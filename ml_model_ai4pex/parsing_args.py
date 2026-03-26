@@ -90,6 +90,8 @@ def parse_args(argv=None):
     parser.add_argument("--train", default=None, help="Flag to indicate whether to train the model.")
     # parser.add_argument("--evaluate", action="store_true", help="Flag to indicate whether to evaluate the model.")
     parser.add_argument("--predict", default=None, help="Flag to indicate whether to predict using the model.")
+    parser.add_argument("--preprocess", default=None, help="Flag to indicate whether to preprocess the data. If set, the script will only run the data preprocessing steps and then exit.")
+
 
     #TODO pickup will not work when using learning rate scheduler. Adapt this. ?
     parser.add_argument("--pickup", default=None, help="Flag to indicate whether to pick up training.")
